@@ -8,9 +8,9 @@
     "import": "./src/index.js"
   },
   "scripts": {
-    "build": "babel src --out-dir dist --extensions \".js\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "start": "node server.js",
+  "build": "babel src --out-dir dist --extensions \".js\""
+ },
   "keywords": [
     "downloader",
     "youtube",
