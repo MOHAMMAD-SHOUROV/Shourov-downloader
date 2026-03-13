@@ -306,11 +306,16 @@ function playYT(){
   let vid = '';
   try{
     const u = new URL(raw);
-    vid = u.searchParams.get('v') || u.pathname.split('/').pop();
+    if(u.hostname === 'youtu.be'){
+      vid = u.pathname.slice(1).split('/')[0];
+    } else {
+      vid = u.searchParams.get('v') || u.pathname.split('/').pop();
+    }
   } catch {
-    vid = raw.replace(/^.*(?:youtu\.be\/|v=|embed\/)/, '').split(/[?&]/)[0];
+    vid = raw.split('/').pop().split('?')[0].split('&')[0];
   }
-  if(!vid){ showToast('⚠️ Invalid YouTube URL'); return; }
+  vid = vid.split('?')[0].split('&')[0];
+  if(!vid){ showToast('Invalid YouTube URL'); return; }
   const fw = document.getElementById('yt-frame-wrap');
   const fi = document.getElementById('yt-iframe');
   fi.src = 'https://www.youtube.com/embed/' + vid + '?autoplay=1&rel=0';
@@ -383,14 +388,15 @@ async function testApi(id, path, special){
 }
 
 function syntaxHL(json){
-  return json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m=>{
-      let c='color:#fb923c';
-      if(/^"/.test(m)) c=/:$/.test(m)?'color:#7dd3fc':'color:#86efac';
-      else if(/true|false/.test(m)) c='color:#fbbf24';
-      else if(/null/.test(m)) c='color:#f87171';
-      return '<span style="'+c+'">'+m+'</span>';
-    });
+  return json
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"([^"]+)":/g,'<span style="color:#7dd3fc">"$1"</span>:')
+    .replace(/: "([^"]*)"/g,': <span style="color:#86efac">"$1"</span>')
+    .replace(/: (-?[0-9][0-9.]*)/g,': <span style="color:#fb923c">$1</span>')
+    .replace(/: (true|false)/g,': <span style="color:#fbbf24">$1</span>')
+    .replace(/: (null)/g,': <span style="color:#f87171">$1</span>');
 }
 
 function showToast(msg){
