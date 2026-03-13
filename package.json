@@ -31,6 +31,7 @@
     "@bochilteam/scraper": "^5.0.1",
     "@distube/ytdl-core": "^4.16.11",
     "cheerio": "^1.0.0-rc.12",
+    "express": "^5.2.1",
     "fb-video-downloader": "^1.0.3",
     "get-twitter-media": "^2.0.8",
     "zod": "^4.0.5"

@@ -1,15 +1,17 @@
-import { youtubedl } from '@distube/ytdl-core';
-import scraper from 'get-twitter-media';
-import { tiktokdl, facebookdl, instagramdl } from '@bochilteam/scraper';
+import { createRequire } from 'module';
+import getTwitterMedia from 'get-twitter-media';
 
-// Destructure CommonJS module manually
-const { twitterdl } = scraper;
+const require = createRequire(import.meta.url);
+const ytdlCore = require('@distube/ytdl-core');
+const scraper = require('@bochilteam/scraper');
+
+const { tiktokdl, facebookdl, instagramdl } = scraper;
 
 export async function downloadMedia(url) {
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    return await youtubedl(url);
+    return await ytdlCore.youtubedl(url);
   } else if (url.includes('twitter.com') || url.includes('x.com')) {
-    return await twitterdl(url);
+    return await getTwitterMedia(url);
   } else if (url.includes('tiktok.com')) {
     return await tiktokdl(url);
   } else if (url.includes('facebook.com')) {
@@ -17,6 +19,6 @@ export async function downloadMedia(url) {
   } else if (url.includes('instagram.com')) {
     return await instagramdl(url);
   } else {
-    throw new Error('❌ Unsupported platform');
+    throw new Error('Unsupported platform');
   }
 }
