@@ -1,38 +1,49 @@
-# Media Downloader
+# SHOUROV ALL DOWNLOADER — API Panel
 
-A Node.js media downloader library with a web UI that supports downloading media info from YouTube, Twitter/X, TikTok, Facebook, and Instagram.
+A premium multi-platform media downloader API panel built with Node.js and Express.
 
 ## Architecture
 
 - **Runtime**: Node.js 20 (ESM modules)
-- **Web Server**: Express.js (`server.js`) — serves the UI and REST API on port 5000
-- **Core Library**: `src/index.js` — `downloadMedia(url)` function that routes URLs to platform-specific scrapers
+- **Web Server**: Express.js (`server.js`) on port 5000
+- **Core Library**: `src/index.js` — per-platform download functions
+
+## API Endpoints
+
+| Endpoint | Platform | Description |
+|---|---|---|
+| `GET /api/youtube?url=` | YouTube | Video info + formats |
+| `GET /api/ytmp3?url=` | YouTube | Audio/MP3 extraction info |
+| `GET /api/tiktok?url=` | TikTok | Video without watermark |
+| `GET /api/facebook?url=` | Facebook | Video download |
+| `GET /api/instagram?url=` | Instagram | Reels / posts / stories |
+| `GET /api/pinterest?url=` | Pinterest | Video & image |
+| `GET /api/capcut?url=` | CapCut | Template video |
+
+All endpoints return `{ success: true, data: {...} }` on success or `{ success: false, error: "..." }` on failure.
 
 ## Key Files
 
-- `server.js` — Express web server with UI at `/` and API at `POST /api/download`
-- `src/index.js` — Core `downloadMedia(url)` function (ESM module)
-- `dist/index.js` — Babel-compiled CJS output (legacy, not used by server)
-- `.babelrc` — Babel config for `@babel/preset-env`
+- `server.js` — Express server + premium panel UI + all API routes
+- `src/index.js` — Core download functions per platform
+- `dist/index.js` — Legacy Babel CJS build (unused)
+- `.babelrc` — Babel config
 
 ## Dependencies
 
 - `express` — Web server
-- `@distube/ytdl-core` — YouTube downloader (CJS, loaded via `createRequire`)
-- `@bochilteam/scraper` — TikTok, Facebook, Instagram scrapers (CJS, loaded via `createRequire`)
-- `get-twitter-media` — Twitter/X media fetcher (ESM default export)
-- `zod` — Schema validation
-- `cheerio` — HTML parsing
+- `@distube/ytdl-core` — YouTube (CJS via `createRequire`)
+- `@bochilteam/scraper` — TikTok, Facebook, Instagram, Pinterest, YouTube v2 (CJS via `createRequire`)
+- `get-twitter-media` — Twitter/X (ESM default)
+- `axios` + `cheerio` — CapCut scraping
 
 ## Import Notes
 
-The project uses ESM (`"type": "module"`). Some dependencies are CommonJS and require `createRequire` from the `module` package:
-- `@distube/ytdl-core` — use `createRequire`
-- `@bochilteam/scraper` — use `createRequire`
+Project is ESM (`"type": "module"`). CommonJS packages use `createRequire` from the `module` package.
 
-## Workflows
+## Workflow
 
-- **Start application**: `node server.js` on port 5000 (webview)
+- **Start application**: `node server.js` → port 5000 (webview)
 
 ## Deployment
 
