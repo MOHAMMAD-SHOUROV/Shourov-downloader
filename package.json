@@ -20,7 +20,7 @@
     "tiktok",
     "media"
   ],
-  "author": "",
+  "author": "Alihsan Shourov",
   "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.28.0",
