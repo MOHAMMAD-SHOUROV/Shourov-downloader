@@ -18,14 +18,14 @@ async function fetchDownload() {
     }
     const d = json.data;
     let thumbHtml = '';
-    if (d.thumbnail) {
-      const img = document.createElement('img');
-      img.className = 'dl-thumb';
-      img.src = d.thumbnail;
-      img.alt = '';
-      img.onerror = function () { this.hidden = true; };
-      thumbHtml = img.outerHTML;
-    } else {
+    if (d.thumbnail || d.avatar) {
+  const img = document.createElement('img');
+  img.className = 'dl-thumb';
+  img.src = d.thumbnail || d.avatar || "https://i.postimg.cc/W1T39jYH/Shourov.jpg";
+  img.alt = '';
+  img.onerror = function () { this.hidden = true; };
+  thumbHtml = img.outerHTML;
+}else {
       thumbHtml = '<div class="dl-thumb-placeholder">🎬</div>';
     }
     const meta = [d.duration, d.channel].filter(Boolean).join(' · ');
