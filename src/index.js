@@ -99,18 +99,14 @@ async function resolveYoutube(url) {
 async function resolveTikTok(url) {
   const data = await tiktokdl(url);
   const formats = [];
-  if (data.video) {
-    const videos = Array.isArray(data.video) ? data.video : [data.video];
-    videos.forEach((v, i) => {
-      if (v) formats.push({ label: i === 0 ? 'MP4 HD (No Watermark)' : 'MP4 SD', quality: i === 0 ? 'HD' : 'SD', type: 'video', url: v });
-    });
-  }
-  if (data.music) formats.push({ label: 'Audio Track', quality: 'Audio', type: 'audio', url: data.music });
+  if (data.video?.noWatermark) formats.push({ label: 'MP4 HD (No Watermark)', quality: 'HD', type: 'video', url: data.video.noWatermark });
+  if (data.video?.withWatermark) formats.push({ label: 'MP4 SD (With Watermark)', quality: 'SD', type: 'video', url: data.video.withWatermark });
+  if (data.audio) formats.push({ label: 'Audio Track', quality: 'Audio', type: 'audio', url: data.audio });
   return {
     platform: 'tiktok',
-    title: data.title || data.description || 'TikTok Video',
-    thumbnail: data.cover || data.thumbnail || '',
-    channel: data.author?.nickname || data.nickname || '',
+    title: data.description || 'TikTok Video',
+    thumbnail: data.thumbnail || '',
+    channel: data.nickname || data.username || '',
     formats,
     sourceUrl: url,
   };
