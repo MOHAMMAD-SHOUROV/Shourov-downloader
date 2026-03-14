@@ -8,9 +8,9 @@
     "import": "./src/index.js"
   },
   "scripts": {
-  "start": "node server.js",
-  "build": "babel src --out-dir dist --extensions \".js\""
- },
+    "start": "node server.js",
+    "build": "babel src --out-dir dist --extensions \".js\""
+  },
   "keywords": [
     "downloader",
     "youtube",
@@ -31,11 +31,11 @@
     "@bochilteam/scraper": "^5.0.1",
     "@distube/ytdl-core": "^4.16.12",
     "axios": "^1.13.6",
-    "cheerio": "1.0.0-rc.12",
+    "cheerio": "^1.0.0",
     "express": "^5.2.1",
     "fb-video-downloader": "^1.0.3",
     "get-twitter-media": "^2.0.8",
-    "zod": "^4.0.5",
-    "undici": "^6.18.0"
+    "undici": "^5.28.5",
+    "zod": "^4.3.6"
   }
 }
