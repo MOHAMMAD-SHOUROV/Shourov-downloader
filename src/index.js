@@ -17,6 +17,16 @@ function fmtSize(bytes) {
   return mb > 0 ? mb + ' MB' : Math.round(bytes / 1024) + ' KB';
 }
 
+async function fetchSize(url) {
+  try {
+    const res = await axios.head(url, { timeout: 6000, headers: { 'User-Agent': UA } });
+    const cl = res.headers['content-length'];
+    return cl ? fmtSize(parseInt(cl)) : '';
+  } catch {
+    return '';
+  }
+}
+
 function fmtDuration(sec) {
   if (!sec) return '';
   const m = Math.floor(sec / 60);
@@ -99,9 +109,18 @@ async function resolveYoutube(url) {
 async function resolveTikTok(url) {
   const data = await tiktokdl(url);
   const formats = [];
-  if (data.video?.noWatermark) formats.push({ label: 'MP4 HD (No Watermark)', quality: 'HD', type: 'video', url: data.video.noWatermark });
-  if (data.video?.withWatermark) formats.push({ label: 'MP4 SD (With Watermark)', quality: 'SD', type: 'video', url: data.video.withWatermark });
-  if (data.audio) formats.push({ label: 'Audio Track', quality: 'Audio', type: 'audio', url: data.audio });
+  if (data.video?.noWatermark) {
+    const size = await fetchSize(data.video.noWatermark);
+    formats.push({ label: 'HD (No Watermark)', quality: 'HD', size, type: 'video', url: data.video.noWatermark });
+  }
+  if (data.video?.withWatermark) {
+    const size = await fetchSize(data.video.withWatermark);
+    formats.push({ label: 'SD (With Watermark)', quality: 'SD', size, type: 'video', url: data.video.withWatermark });
+  }
+  if (data.audio) {
+    const size = await fetchSize(data.audio);
+    formats.push({ label: 'Audio Track', quality: 'Audio', size, type: 'audio', url: data.audio });
+  }
   return {
     platform: 'tiktok',
     title: data.description || 'TikTok Video',
