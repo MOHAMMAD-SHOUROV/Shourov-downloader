@@ -88,12 +88,28 @@ body::before{content:'';position:fixed;inset:0;background:
 pointer-events:none;z-index:0;}
 .wrap{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:0 16px 80px;}
 
+/* ── Animated BG Particles ── */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.particle{position:absolute;border-radius:50%;animation:floatUp linear infinite;opacity:0;}
+@keyframes floatUp{0%{transform:translateY(100vh) scale(0);opacity:0;}10%{opacity:.7;}90%{opacity:.3;}100%{transform:translateY(-10vh) scale(1.2);opacity:0;}}
+
 /* ── Profile ── */
-.profile-bar{display:flex;align-items:center;justify-content:space-between;padding:20px 0 0;}
-.profile-left{display:flex;align-items:center;gap:14px;}
-.avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;flex-shrink:0;border:2px solid rgba(124,58,237,.4);box-shadow:0 0 20px rgba(124,58,237,.35);}
-.profile-name{font-size:1rem;font-weight:700;color:var(--t);}
-.profile-role{font-size:11px;color:var(--m);margin-top:2px;}
+.profile-bar{display:flex;align-items:center;justify-content:space-between;padding:24px 0 0;flex-wrap:wrap;gap:14px;}
+.profile-left{display:flex;align-items:center;gap:16px;}
+.avatar-wrap{position:relative;flex-shrink:0;}
+.avatar-ring{width:68px;height:68px;border-radius:50%;padding:3px;background:conic-gradient(from 0deg,#7c3aed,#06b6d4,#10b981,#f59e0b,#ef4444,#e879f9,#7c3aed);animation:spinRing 3s linear infinite;box-shadow:0 0 18px rgba(124,58,237,.6),0 0 36px rgba(6,182,212,.3),0 0 60px rgba(232,121,249,.2);}
+@keyframes spinRing{to{transform:rotate(360deg);}}
+.avatar{width:62px;height:62px;border-radius:50%;object-fit:cover;display:block;border:3px solid #07090f;}
+.avatar-glow{position:absolute;inset:-6px;border-radius:50%;background:conic-gradient(from 0deg,#7c3aed,#06b6d4,#10b981,#f59e0b,#ef4444,#e879f9,#7c3aed);animation:spinRing 3s linear infinite;filter:blur(10px);opacity:.5;z-index:-1;}
+.profile-info{display:flex;flex-direction:column;gap:3px;}
+.profile-name{font-size:1.15rem;font-weight:900;letter-spacing:-.02em;background:linear-gradient(135deg,#fff 0%,#c4b5fd 40%,#67e8f9 80%,#a7f3d0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 8px rgba(167,99,255,.5));}
+.profile-role{font-size:11.5px;color:#94a3b8;margin-top:0;font-weight:500;letter-spacing:.02em;}
+.profile-connect{display:flex;gap:8px;margin-top:5px;}
+.connect-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:100px;font-size:11px;font-weight:700;text-decoration:none;border:1px solid;transition:all .2s;letter-spacing:.02em;}
+.connect-btn.fb{background:rgba(24,119,242,.15);border-color:rgba(24,119,242,.5);color:#60a5fa;}
+.connect-btn.fb:hover{background:rgba(24,119,242,.3);box-shadow:0 0 14px rgba(24,119,242,.4);}
+.connect-btn.wa{background:rgba(37,211,102,.12);border-color:rgba(37,211,102,.45);color:#4ade80;}
+.connect-btn.wa:hover{background:rgba(37,211,102,.28);box-shadow:0 0 14px rgba(37,211,102,.4);}
 .live-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);border-radius:100px;padding:6px 14px;font-size:11px;font-weight:700;color:#10b981;letter-spacing:.09em;text-transform:uppercase;}
 .live-dot{width:7px;height:7px;background:#10b981;border-radius:50%;box-shadow:0 0 8px #10b981;animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
@@ -259,15 +275,31 @@ footer strong{color:var(--t);}
 </style>
 </head>
 <body>
+<div id="particles"></div>
 <div class="wrap">
 
 <!-- Profile Bar -->
 <div class="profile-bar">
   <div class="profile-left">
-    <div class="avatar">AS</div>
-    <div>
+    <div class="avatar-wrap">
+      <div class="avatar-glow"></div>
+      <div class="avatar-ring">
+        <img class="avatar" src="https://i.postimg.cc/wTgWQW8s/Shourov.jpg" alt="Alihsan Shourov" onerror="this.outerHTML='<div class=\'avatar\' style=\'display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;color:#fff;background:linear-gradient(135deg,#7c3aed,#06b6d4)\'>AS</div>'"/>
+      </div>
+    </div>
+    <div class="profile-info">
       <div class="profile-name">Alihsan Shourov</div>
       <div class="profile-role">Developer · All Downloader API</div>
+      <div class="profile-connect">
+        <a class="connect-btn fb" href="https://www.facebook.com/profile.php?id=61588161951831" target="_blank" rel="noopener">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+          Facebook
+        </a>
+        <a class="connect-btn wa" href="https://wa.me/8801709281334" target="_blank" rel="noopener">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp
+        </a>
+      </div>
     </div>
   </div>
   <div class="live-badge"><span class="live-dot"></span>Live API • All Systems Operational</div>
@@ -370,6 +402,23 @@ footer strong{color:var(--t);}
 <div class="toast" id="toast">✅ Copied!</div>
 
 <script src="/panel.js"></script>
+<script>
+(function(){
+  var colors=['#7c3aed','#06b6d4','#10b981','#f59e0b','#ef4444','#e879f9','#38bdf8','#a78bfa','#34d399'];
+  var container=document.getElementById('particles');
+  for(var i=0;i<38;i++){
+    var p=document.createElement('div');
+    p.className='particle';
+    var size=Math.random()*5+2;
+    var color=colors[Math.floor(Math.random()*colors.length)];
+    var left=Math.random()*100;
+    var delay=Math.random()*18;
+    var dur=Math.random()*14+10;
+    p.style.cssText='width:'+size+'px;height:'+size+'px;left:'+left+'%;background:'+color+';box-shadow:0 0 '+size*2+'px '+color+';animation-duration:'+dur+'s;animation-delay:'+delay+'s;';
+    container.appendChild(p);
+  }
+})();
+</script>
 </body>
 </html>`);
 });
