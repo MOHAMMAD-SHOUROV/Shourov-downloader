@@ -110,13 +110,26 @@ async function resolveTikTok(url) {
 async function resolveFacebook(url) {
   const data = await facebookdl(url);
   const formats = [];
+  if (Array.isArray(data.video)) {
+    for (const v of data.video) {
+      if (typeof v.download === 'function') {
+        try {
+          const videoUrl = await v.download();
+          const label = v.quality || 'MP4 Video';
+          const isHD = label.toLowerCase().includes('720') || label.toLowerCase().includes('hd');
+          formats.push({ label: 'MP4 ' + label, quality: isHD ? 'HD' : 'SD', type: 'video', url: videoUrl });
+        } catch (_) {}
+      }
+    }
+  }
   if (data.hd) formats.push({ label: 'MP4 HD', quality: 'HD', type: 'video', url: data.hd });
-  if (data.sd) formats.push({ label: 'MP4 SD', quality: 'SD', type: 'video', url: data.sd });
+  if (data.sd && !formats.find(f => f.quality === 'SD')) formats.push({ label: 'MP4 SD', quality: 'SD', type: 'video', url: data.sd });
   return {
     platform: 'facebook',
     title: data.title || 'Facebook Video',
     thumbnail: data.thumbnail || data.image || '',
     channel: data.author || '',
+    duration: data.duration || '',
     formats,
     sourceUrl: url,
   };
@@ -197,7 +210,18 @@ export async function downloadYoutubeMP3(url) {
 }
 
 export async function downloadTikTok(url) { return await tiktokdl(url); }
-export async function downloadFacebook(url) { return await facebookdl(url); }
+export async function downloadFacebook(url) {
+  const data = await facebookdl(url);
+  const videos = [];
+  if (Array.isArray(data.video)) {
+    for (const v of data.video) {
+      if (typeof v.download === 'function') {
+        try { videos.push({ quality: v.quality, url: await v.download() }); } catch (_) {}
+      }
+    }
+  }
+  return { thumbnail: data.thumbnail, duration: data.duration, title: data.title, video: videos };
+}
 export async function downloadInstagram(url) {
   if (url.includes('/stories/')) return await instagramStory(url);
   return await instagramdl(url);
