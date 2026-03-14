@@ -1,11 +1,11 @@
 import { createRequire } from 'module';
 import getTwitterMedia from 'get-twitter-media';
+import { load as cheerioLoad } from 'cheerio';
 
 const require = createRequire(import.meta.url);
 const ytdlCore = require('@distube/ytdl-core');
 const scraper = require('@bochilteam/scraper');
 const axios = require('axios');
-const cheerio = require('cheerio');
 
 const { tiktokdl, facebookdl, instagramdl, instagramStory, pinterest, youtubedlv2, savefrom, snapsave, youtubeSearch } = scraper;
 
@@ -66,12 +66,6 @@ async function resolveYoutube(url) {
     .filter(f => f.hasVideo && f.hasAudio && f.container === 'mp4')
     .sort((a, b) => (parseInt(b.qualityLabel) || 0) - (parseInt(a.qualityLabel) || 0));
 
-  // Video only (higher quality, needs merging — skip for simplicity, just show combined)
-  // Audio only
-  const audioFormats = allFormats
-    .filter(f => f.hasAudio && !f.hasVideo && f.audioCodec && f.audioCodec.includes('mp4a'))
-    .sort((a, b) => (b.audioBitrate || 0) - (a.audioBitrate || 0));
-
   const formats = [];
   const seen = new Set();
 
@@ -90,19 +84,6 @@ async function resolveYoutube(url) {
     }
   }
 
-  // Add best audio
-  if (audioFormats.length > 0) {
-    const af = audioFormats[0];
-    formats.push({
-      label: 'MP3 Audio',
-      quality: (af.audioBitrate || 128) + 'kbps',
-      type: 'audio',
-      size: fmtSize(parseInt(af.contentLength)),
-      itag: af.itag,
-      mimeType: af.mimeType,
-    });
-  }
-
   return { platform: 'youtube', title, thumbnail, duration, channel, formats, sourceUrl: url };
 }
 
@@ -112,14 +93,9 @@ async function resolveTikTok(url) {
   if (data.video?.noWatermark) {
     const size = await fetchSize(data.video.noWatermark);
     formats.push({ label: 'HD (No Watermark)', quality: 'HD', size, type: 'video', url: data.video.noWatermark });
-  }
-  if (data.video?.withWatermark) {
+  } else if (data.video?.withWatermark) {
     const size = await fetchSize(data.video.withWatermark);
-    formats.push({ label: 'SD (With Watermark)', quality: 'SD', size, type: 'video', url: data.video.withWatermark });
-  }
-  if (data.audio) {
-    const size = await fetchSize(data.audio);
-    formats.push({ label: 'Audio Track', quality: 'Audio', size, type: 'audio', url: data.audio });
+    formats.push({ label: 'MP4 Video', quality: 'HD', size, type: 'video', url: data.video.withWatermark });
   }
   return {
     platform: 'tiktok',
@@ -250,7 +226,7 @@ export async function downloadSpotify(url) {
 export async function downloadTeraBox(url) {
   const headers = { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9' };
   const res = await axios.get(url, { headers, timeout: 15000, maxRedirects: 10 });
-  const $ = cheerio.load(res.data);
+  const $ = cheerioLoad(res.data);
   const title = $('meta[property="og:title"]').attr('content') || $('title').text() || 'TeraBox File';
   const fileUrl = $('meta[property="og:video"]').attr('content') || $('meta[property="og:video:url"]').attr('content') || null;
   const thumbnail = $('meta[property="og:image"]').attr('content') || null;
@@ -274,7 +250,7 @@ export async function downloadGoogleDrive(url) {
 export async function downloadCapCut(url) {
   const headers = { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9', 'Referer': 'https://www.capcut.com/' };
   const response = await axios.get(url, { headers, timeout: 15000 });
-  const $ = cheerio.load(response.data);
+  const $ = cheerioLoad(response.data);
   const title = $('meta[property="og:title"]').attr('content') || $('title').text() || 'CapCut Template';
   const videoUrl = $('meta[property="og:video"]').attr('content') || $('meta[property="og:video:url"]').attr('content') || null;
   const thumbnail = $('meta[property="og:image"]').attr('content') || null;
